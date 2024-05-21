@@ -21,7 +21,7 @@ namespace Modelo
         
         // ########### Parte 3 - Empleado - BD  ############
 
-        public static async MostrarEmpleados(){
+        public static async MostrarEmpleadosBD(){
 
             // Definir la respuesta por default
             let respuesta = {
@@ -38,7 +38,7 @@ namespace Modelo
         
                 let resJSON = await res.json()
 
-                this.MostrarListadoEmpleado(resJSON);
+                this.MostrarListadoEmpleadoBD(resJSON);
            
                 //Informar por consola y alert
                 console.log("Mostrar: ", resJSON);
@@ -55,7 +55,7 @@ namespace Modelo
             }     
             return respuesta;     
         }
-        public static MostrarListadoEmpleado(data:any):void {
+        public static MostrarListadoEmpleadoBD(data:any):void {
 
             let prod_obj_array: any[] = data.usuarios;
     
@@ -128,6 +128,63 @@ namespace Modelo
             });  
             (<HTMLInputElement>document.getElementById("id")).readOnly = false;  
         }
+        public static async AgregarEmpleadoBD() {
+
+            // Obtener los elementos del formulario
+            const nombre =  (<HTMLInputElement>document.getElementById("nombre")).value;
+            const correo =  (<HTMLInputElement>document.getElementById("correo")).value;
+            const clave =  (<HTMLInputElement>document.getElementById("clave")).value;
+            const id_perfil =  (<HTMLInputElement>document.getElementById("cboPerfiles")).value;
+            const sueldo =  (<HTMLInputElement>document.getElementById("sueldo")).value;
+            const foto:any =  (<HTMLInputElement>document.getElementById("foto"));
+
+            // Crear el objeto usuario
+            const empleado = {
+                "nombre" : nombre,
+                "correo" : correo,
+                "clave" : clave,
+                "id_perfil" : id_perfil,
+                "sueldo" : sueldo
+            };
+            let form : FormData = new FormData();
+            form.append('foto', foto.files[0]);
+            form.append('obj_empleado', JSON.stringify(empleado));
+            
+            // Definir las opciones para la solicitud fetch
+            const opciones = {
+                method: "POST",
+                body: form,
+
+            };
+            // Definir la respuesta por default
+            let respuesta = {
+                "exito": false,
+                "mensaje": "No se pudo agregar correctamente el usuario",
+            };
+            
+            try {
+                // Enviar la solicitud POST usando manejadorFetch
+                let response = await this.manejadorFetch(this.url, opciones);
+
+                let resCadena = await response.text(); 
+            
+                // Informar por consola y alert
+                console.log("Agregar: ", resCadena);
+                alert("Se ha agregado correctamente");
+                
+                //Modificar la respuesta
+                respuesta = {
+                    exito: true,
+                    mensaje: "Se agrego correctamente el usuario",
+                };
+                this.Success();
+            
+            } catch (error:any) {
+                this.Fail(error);
+                
+            }
+            return respuesta;
+        }
     
         
         // ########### FAIL - SUCCESS  ############
@@ -139,7 +196,7 @@ namespace Modelo
         }
         public static Success() {
         
-            this.MostrarEmpleados();
+            this.MostrarEmpleadosBD();
     
             this.LimpiarForm();
         }

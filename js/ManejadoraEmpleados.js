@@ -25,7 +25,7 @@ var Modelo;
             return res;
         }
         ;
-        static MostrarEmpleados() {
+        static MostrarEmpleadosBD() {
             return __awaiter(this, void 0, void 0, function* () {
                 let respuesta = {
                     "exito": false,
@@ -37,7 +37,7 @@ var Modelo;
                 try {
                     let res = yield this.manejadorFetch(this.url, opciones);
                     let resJSON = yield res.json();
-                    this.MostrarListadoEmpleado(resJSON);
+                    this.MostrarListadoEmpleadoBD(resJSON);
                     console.log("Mostrar: ", resJSON);
                     alert("Se ha mostrados los usuarios correctamente");
                     respuesta = {
@@ -51,7 +51,7 @@ var Modelo;
                 return respuesta;
             });
         }
-        static MostrarListadoEmpleado(data) {
+        static MostrarListadoEmpleadoBD(data) {
             let prod_obj_array = data.usuarios;
             let div = document.getElementById("divTablaEmpleados");
             let tabla = `<table class="table table-hover">
@@ -103,12 +103,55 @@ var Modelo;
             });
             document.getElementById("id").readOnly = false;
         }
+        static AgregarEmpleadoBD() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const nombre = document.getElementById("nombre").value;
+                const correo = document.getElementById("correo").value;
+                const clave = document.getElementById("clave").value;
+                const id_perfil = document.getElementById("cboPerfiles").value;
+                const sueldo = document.getElementById("sueldo").value;
+                const foto = document.getElementById("foto");
+                const empleado = {
+                    "nombre": nombre,
+                    "correo": correo,
+                    "clave": clave,
+                    "id_perfil": id_perfil,
+                    "sueldo": sueldo
+                };
+                let form = new FormData();
+                form.append('foto', foto.files[0]);
+                form.append('obj_empleado', JSON.stringify(empleado));
+                const opciones = {
+                    method: "POST",
+                    body: form,
+                };
+                let respuesta = {
+                    "exito": false,
+                    "mensaje": "No se pudo agregar correctamente el usuario",
+                };
+                try {
+                    let response = yield this.manejadorFetch(this.url, opciones);
+                    let resCadena = yield response.text();
+                    console.log("Agregar: ", resCadena);
+                    alert("Se ha agregado correctamente");
+                    respuesta = {
+                        exito: true,
+                        mensaje: "Se agrego correctamente el usuario",
+                    };
+                    this.Success();
+                }
+                catch (error) {
+                    this.Fail(error);
+                }
+                return respuesta;
+            });
+        }
         static Fail(retorno) {
             console.error(retorno);
             alert("Ha ocurrido un ERROR!!!");
         }
         static Success() {
-            this.MostrarEmpleados();
+            this.MostrarEmpleadosBD();
             this.LimpiarForm();
         }
         static LimpiarForm() {
